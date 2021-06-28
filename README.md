@@ -1,1 +1,3 @@
-# pw2-react-project
+# react-project
+
+PW2 - ReactJS Project without Typescript
