@@ -1,16 +1,24 @@
 import './App.css'
 
 import Table from './components/Table'
+import Form from './components/Form'
+import { useState } from 'react'
 
 function App() {
+  const [dados, setDados] = useState([])
 
-  const showAlert = (str) => {
-    alert(str)
+  const showImc = (imc) => {
+    setDados([...dados, imc])
+  }
+
+  const resetTable = () => {
+    setDados([])
   }
 
   return (
-    <div className="App">
-      <Table cabecalho={['Nome','Idade','Actions']} dados={[{nome: 'Jorge', idade: '32'},{nome: 'Paulo', idade: '21'}]} showAlert={showAlert} />
+    <div className="App" style={{ display: 'flex', flexDirection: 'row' }}>
+      <Table dados={dados} />
+      <Form showImc={showImc} resetTable={resetTable} />
     </div>
   )
 }
