@@ -1,31 +1,39 @@
-import { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import Tabela from './tabela'
 import Alerta from './alerta'
+import Cadastrar from './cadastrar'
 
-const livros = [
-  {
-    id : 1,
-    titulo : "React PWA",
-    autor : "Mauricio" ,
-    ano : 202
-  },
-  {
-    id : 2,
-    titulo : "React Hooks",
-    autor : "Mauricio" ,
-    ano : 2021
-  }
-]
+import useAuth from '../../hooks/useAuth'
 
-const Livro = ({})=>{
-  const [listaObjetos, setListaObjetos]= useState(livros)
+const Livro = () => {
+  const {
+    listaObjetos,
+    setListaObjetos,
+    codigo,
+    setCodigo
+  } = useAuth()
+
   const [alerts, setAlerts]= useState([])
 
   const remover = objeto => {
     if (window.confirm("Remover este livro?")) {
-      setListaObjetos(listaObjetos.filter(p => p.id !== objeto.id))
+      setListaObjetos(listaObjetos.filter(livro => livro.id !== objeto.id))
       setAlerts(alerts=> [...alerts, objeto.titulo])
     }
+  }
+
+  const inserir = objeto => {
+    setCodigo(codigo + 1)
+    objeto.id = codigo
+    setListaObjetos([...listaObjetos, objeto])
+  }
+
+  const editar = objeto => {
+    setListaObjetos(listaObjetos.map(livro => {
+      if (livro.id === objeto.id) livro = objeto
+      return livro
+    }))
   }
 
   const onCloseAlert = (index)=>{
@@ -42,7 +50,34 @@ const Livro = ({})=>{
           onClose={()=>onCloseAlert(index)} />
       )}
 
-      <Tabela listaObjetos={listaObjetos} remover={remover}/>
+      <Router>
+        <Switch>
+          <Route exact path="/livros"
+            render={
+            () => <Tabela listaObjetos={listaObjetos}
+              remover={remover} />
+          } />
+
+          <Route exact path="/livros/cadastrar" render={() =>
+            <Cadastrar inserir={inserir}
+              objeto={{ id: 0, titulo: "", autor: "", ano: "" }} />
+          } />
+
+          <Route exact path="/livros/editar/:id" render={ props => {
+            const objeto = listaObjetos.find(
+              objeto => objeto.id === Number(props.match.params.id)
+            )
+
+            if (objeto) {
+              return (
+                <Cadastrar editar={editar} objeto={objeto} />
+              )
+            } else {
+              return <Redirect to="/livros"/>
+            }
+          }} />
+        </Switch>
+      </Router>
     </>
   )
 }

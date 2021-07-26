@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 
 const Alerta = ({type, dismissible=true, text, onClose, timeout})=>{
   useEffect(()=>{
